@@ -1,0 +1,203 @@
+{% extends 'layout/_layout.html' %}
+{% load mytags %}
+{% block css %}
+    <style>
+        a:hover{
+            text-decoration: none;
+        }
+        table thead th a{
+            display: inline-block;
+            width: 100%;
+            height: 100%
+        }
+        .paginator {
+            color: #666;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            overflow: hidden;
+            font-size: 13px;
+            padding: 8px;
+            line-height: 0;
+            margin: 0;
+            border-top: 1px solid #ddd;
+        }
+        .pagination {
+            margin: 0;
+        }
+        .table{
+            margin-bottom: 0;
+        }
+        #search{
+            border-radius: 4px;
+        }
+        table #tb tr.selected {
+            background-color: #FFFFCC;
+        }
+        .table > thead > tr {
+            background-image: none;
+        }
+        table thead th:hover{
+            background-color: #EEEEEE;
+            cursor: pointer;
+        }
+        .table > thead > tr > th.active{
+            background-color: #EEEEEE;
+            cursor: pointer;
+        }
+        .table > thead > tr > th {
+            vertical-align: bottom;
+            border-bottom: 0;
+        }
+        #inputSearch{
+            border: 1px solid #6fb3e0;
+            border-radius: 4px !important;
+            width: 200px;
+            height: 28px;
+        }
+    </style>
+{% endblock %}
+{% block path %}{{ request.path|get_path }}{% endblock %}
+{% block page_content %}
+    <div style="margin: 10px 0;">
+        {% if boss_admin_class.list_filter %}
+            <div style="border: 1px dashed #dddddd;padding: 8px;border-left: 3px solid #337ab7;">
+                <form action="">
+                    <i class="ace-icon fa fa-search nav-search-icon"></i>
+                    <input id='inputSearch' type="search" name="Q" value="{{ boss_admin_class.search_keyword }}"
+                           placeholder="{{ boss_admin_class|get_placeholder }}">
+                    <input type="submit" value="Go">
+                    {% for k, v in boss_admin_class.search_dict.items %}
+                        <input type="hidden" name="{{ k }}" value="{{ v }}">
+                    {% endfor %}
+                </form>
+            </div>
+            <div style="margin: 10px 0">
+                <form action="">
+                    {% if ordered_dict %}
+                        <input type="hidden" name="o" value="{{ ordered_dict|get_order_by_index }}">
+                    {% endif %}
+                    {% for filter in boss_admin_class.list_filter %}
+                        {{ filter | upper }}：{% html_filter filter boss_admin_class %}
+                    {% endfor %}
+                    <input class="btn btn-success" id="search" type="submit" value="Search">
+                </form>
+            </div>
+        {% endif %}
+    </div>
+    <div style="margin-bottom: 20px">
+        <form method="post" id="action">
+            {% csrf_token %}
+            <span>Action：</span>
+            <select name="action">
+                <option value="">--------</option>
+                {% for action in boss_admin_class.actions %}
+                    <option value="{{ action }}">{{ action }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Go" class="btn btn-default" style="height: 30px" />
+        </form>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">ModelTitle</h3>
+        </div>
+        <div class="panel-body result">
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 33px"><input id="idCheckAll" type="checkbox"></th>
+                        {% if boss_admin_class.list_display %}
+                            {% for column in boss_admin_class.list_display %}
+                                <th>
+                                    <a href="?o={% get_sorted_column column forloop.counter0 ordered_dict %}{{ boss_admin_class|get_search_dict }}">
+                                        {{ column|get_verbose_name:boss_admin_class }}
+                                        {{ column|get_icons:ordered_dict }}
+                                    </a>
+                                </th>
+                            {% endfor %}
+                        {% else %}
+                            <th style="float: left">{{ model_name|upper }}</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody id="tb">
+                    {% for obj in query_sets %}
+                        <tr class="">{% html_row obj boss_admin_class %}</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="paginator">
+                <ul class="pagination pagination-sm">
+                    {{ page_str|safe }}
+                    <li class="disabled"><span>总计 {{ num }} 条</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            bindCheckAll();
+            bindCheckBox();
+            bindActiveTh();
+            bindAction();
+        });
+
+        function bindCheckAll() {
+            $('#idCheckAll').click(function () {
+                $('#tb').find(':checkbox').each(function () {
+                    if($('#idCheckAll').prop('checked')){
+                        $(this).prop('checked', true);
+                        $(this).parent().parent().addClass('selected')
+                    }else {
+                        $(this).prop('checked', false);
+                        $(this).parent().parent().removeClass('selected')
+                    }
+                })
+            })
+        }
+        
+        function bindCheckBox() {
+            $('#tb').on('click', 'input[type="checkbox"]', function () {
+                if($(this).prop('checked')){
+                    $(this).parent().parent().addClass('selected')
+                }else {
+                    $(this).parent().parent().removeClass('selected')
+                }
+            })
+        }
+
+        function bindActiveTh() {
+            var th = $('table thead th');
+            if(th.find('i').length){
+                th.find('i').first().parent().parent().addClass('active')
+            }
+        }
+
+        function bindAction() {
+            $('#action').submit(function () {
+                var selected = $('select[name="action"]').val();
+                var checkedboxs = $('input[row-select]').filter(':checked');
+                if(!selected){
+                    alert('必须选中某项动作');
+                    return false;
+                }
+                if(checkedboxs.length==0){
+                    alert('必须选中某条记录');
+                    return false;
+                }else {
+                    var actionCheckBoxs = [];
+                    $.each(checkedboxs, function () {
+                        actionCheckBoxs.push($(this).val());
+                    });
+                    var submitInput = document.createElement('input');
+                    $(submitInput).attr({'type': 'hidden', 'name': 'checkboxs', 'value': JSON.stringify(actionCheckBoxs)});
+                    $(this).append(submitInput);
+                    return true;
+                }
+            })
+        }
+    </script>
+{% endblock %}

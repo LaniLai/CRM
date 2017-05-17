@@ -1,0 +1,54 @@
+{% extends 'layout/_layout.html' %}
+{% block css %}
+    <style>
+        h1 {
+            font-weight: 300;
+            font-size: 20px;
+            color: #666;
+        }
+        .module caption{
+            margin: 0;
+            padding: 5px;
+            font-weight: 400;
+            font-size: 15px;
+            text-align: left;
+            background: #79aec8;
+            color: #fff;
+        }
+        th{
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+    <h1>Site administration</h1>
+    {% for app_name,app_tables in registry.items %}
+        <div class="app-{{ app_name }} module">
+            <table style="width: 95%" class="table">
+                <caption>{{ app_name | upper }}</caption>
+                <tbody style="margin-top: 20px">
+                    {% for table in app_tables %}
+                        <tr>
+                            <th>
+                                <a href="{% url 'TableDetail' app_name table %}">{{ table }}</a>
+                            </th>
+                            <td>
+                                <a href="{{ app_name }}/{{ table }}/add/">
+                                    <i style="color: greenyellow" class="fa fa-plus" aria-hidden="true"></i>
+                                    Add
+                                </a>
+                            </td>
+                            <td>
+                                <i style="color: #F0BC1A" class="fa fa-pencil" aria-hidden="true"></i>
+                                Change
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+{% endblock %}
+

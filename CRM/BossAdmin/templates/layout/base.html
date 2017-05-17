@@ -1,0 +1,32 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>{% block title %}控制台-CRM{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/font-awesome/css/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}">
+    <!-- ace styles -->
+    <link rel="stylesheet" href="{% static 'css/ace.css' %}" id="main-ace-style">
+    <link rel="stylesheet" href="{% static 'css/ace-skins.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ace-rtl.css' %}">
+    <!-- ace settings handler -->
+    <script src="{% static 'js/ace-extra.js' %}"></script>
+    {% block css %}{% endblock %}
+</head>
+<body class="no-skin">
+{% block body %}
+{% endblock %}
+<script src="{% static 'js/jquery-3.1.1.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.js' %}"></script>
+<!-- ace scripts -->
+<script src="{% static 'js/ace-elements.js' %}"></script>
+<script src="{% static 'js/ace.js' %}"></script>
+<script>
+    $('#sidebar .nav-list').find('li a[href="{{ request.path }}"]').parent().
+    addClass('active').siblings().removeClass('active');
+</script>
+{% block js %}{% endblock %}
+</body>
+</html>

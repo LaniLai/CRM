@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>CRM Admin | Login</title>
+	<link rel="stylesheet" href="{% static 'css/login/crm-admin.min.css' %}" >
+    <link rel="stylesheet" href="{% static 'plugins/font-awesome/css/font-awesome.min.css' %}">
+    <style>
+        .uniform{
+            position: absolute;
+            right: 120px;
+        }
+        div.checker span {
+            text-align: center;
+            background-position: 0 -260px;
+        }
+    </style>
+</head>
+<body class="login">
+	<!-- PAGE -->
+	<section id="page">
+        <header>
+            <!-- NAV-BAR -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-4">
+                        <div id="logo">
+                            <img src="{% static 'imgs/index.png' %}" height="40" alt="logo name" /></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/NAV-BAR -->
+        </header>
+        <section id="login" class="visible">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-4">
+                        <div class="login-box-plain">
+                            <h2 class="bigintro">Sign In</h2>
+                            <form role="form" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Username</label>
+                                    <i class="fa fa-envelope"></i>
+                                    <input type="text" class="form-control" name="username" >
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Password</label>
+                                    <i class="fa fa-lock"></i>
+                                    <input type="password" class="form-control" name="password" >
+                                </div>
+                                <div class="form-actions">
+                                    <span style="color: red">{{ error_msg }}</span>
+                                    <label class="checkbox">
+                                        <div class="checker">
+                                            <span><input class="uniform" name="checked" type="checkbox"></span>
+                                        </div> Remember me
+                                    </label>
+                                    <button type="submit" class="btn btn-danger">Submit</button>
+                                </div>
+                            </form>
+                            <!-- /SOCIAL LOGIN -->
+                            <div class="login-helpers">
+                                <a href="#" onclick="swapScreen('forgot');return false;">Forgot Password?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--/LOGIN -->
+        <!-- FORGOT PASSWORD -->
+        <section id="forgot">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-4">
+                        <div class="login-box-plain">
+                            <h2 class="bigintro">Reset Password</h2>
+                            <div class="divide-40"></div>
+                            <form role="form">
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Enter your Email address</label>
+                                <i class="fa fa-envelope"></i>
+                                <input type="email" class="form-control" id="exampleInputEmail1" >
+                              </div>
+                              <div class="form-actions">
+                                <button type="submit" class="btn btn-info">Send Me Reset Instructions</button>
+                              </div>
+                            </form>
+                            <div class="login-helpers">
+                                <a href="#" onclick="swapScreen('login');return false;">Back to Login</a> <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- FORGOT PASSWORD -->
+	</section>
+
+	<script src="{% static 'js/jquery-3.1.1.js' %}"></script>
+	<script src="{% static 'plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+	<script>
+		jQuery(document).ready(function() {
+			App.setPage("login");  //Set current page
+			App.init(); //Initialise plugins and elements
+		});
+	</script>
+	<script type="text/javascript">
+		function swapScreen(id) {
+			jQuery('.visible').removeClass('visible animated fadeInUp');
+			jQuery('#'+id).addClass('visible animated fadeInUp');
+		}
+	</script>
+</body>
+</html>

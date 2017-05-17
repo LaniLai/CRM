@@ -1,0 +1,112 @@
+{% extends 'layout/_layout.html' %}
+{% load mytags %}
+{% load staticfiles %}
+{% block css %}
+    <style>
+        a:hover{text-decoration: none}
+        ul li{list-style: none;display: inline-block}
+        .col-sm-2 {
+            width: 11.667%;
+        }
+        input[type=text], .form-group select, .form-group textarea   {
+            border-radius: 4px;
+            width: 500px;
+        }
+        .submit-row {
+            padding: 12px 14px;
+            margin: 0 20px 20px 20px;
+            background: #f8f8f8;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            text-align: right;
+            overflow: hidden;
+        }
+        .select-left, .select-right{
+            display: inline-block;
+        }
+        .select-right{float: right}
+        .select-left select, .select-right select,.select-left input{
+            width: 230px;
+        }
+        .select-left select, .select-right select{height: 96px}
+        a.selector-chooseall,a.selector-clearall{
+            padding: 0 18px 0 0;
+            font-size: 16px;
+            /*background: url(/BossAdmin/static/imgs/icon.png) right -160px no-repeat;*/
+            cursor: pointer;
+            text-align: center;
+        }
+        span.input-icon {
+            display: block;
+        }
+    </style>
+{% endblock %}
+{% block path %}{{ request.path|get_path }}{% endblock %}
+{% block page_content %}
+    <div style="padding: 10px 0">
+        <form method="post" class="form-horizontal" novalidate>
+        {% csrf_token %}
+        {% for field in form_obj %}
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">{{ field.label }}</label>
+                <div class="col-sm-10">
+                    {% if field.name in boss_admin_class.filter_horizontal %}
+                    <div class="selector" style="width: 500px">
+                        <div class="select-left">
+                            <span class="input-icon">
+                                <input id='filter' class="nav-search-input form-control" placeholder="可选项过滤..." type="text">
+                                <i class="ace-icon fa fa-search nav-search-icon"></i>
+                            </span>
+                            <select multiple="multiple" id="id_{{ field.name }}_from">
+                                {% get_available_m2m_data field.name form_obj boss_admin_class as available %}
+                                {% for option in available %}
+                                    <option value="{{ option.id }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                            <a style="display: block" class="selector-chooseall active">
+                                Choose all
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div class="select-right">
+                            <select multiple="multiple" id="id_{{ field.name }}_to" name="{{ field.name }}">
+                                {% get_chosen_m2m_data field.name form_obj boss_admin_class as chosen %}
+                                {% for option in chosen %}
+                                    <option value="{{ option.id }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                            <a style="display: block" class="selector-clearall active">
+                                <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+                                Remove all
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    <span style="color: red;font-weight: 900">{{ field.errors.0 }}</span>
+                </div>
+            </div>
+        {% endfor %}
+        {% if not boss_admin_class.status %}
+            {% for field in boss_admin_class.readonly_fields %}
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">{{ field|get_verbose_name:boss_admin_class }}</label>
+                    <div class="col-sm-10">
+                        <p style="line-height: 25px">{{ field|get_field_text:form_obj }}</p>  <!-- 根据字段名称获取对象的文本信息 -->
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="submit-row form-group" style="margin: 0 50px;">
+            {% if form_obj.instance.id %}
+            <a class="btn btn-danger" href="{% url 'action' app_name model_name form_obj.instance.id 'delete/' %}">删除</a>
+            {% endif %}
+            <input id='save' value="Save" class="btn btn-primary" type="submit">
+        </div>
+        </form>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/bossadmin/modelrowdata.js' %}"></script>
+{% endblock %}

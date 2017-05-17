@@ -1,0 +1,121 @@
+{% extends 'public/layout.html' %}
+{% load staticfiles %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/dropzone/dropzone.css' %}">
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <h3>请认真填写以下内容并仔细阅读培训合同</h3>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">学员在线报名</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="post" id="registration_data">
+                    {% for field in customer_form %}
+                    <div class="form-group col-lg-6">
+                        <label class="col-sm-2  control-label">{{ field.label }}</label>
+                        <div class="col-sm-10">
+                            {{ field }}
+                            <span style="color: red;">{{ field.errors.0 }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="form-group col-lg-6">
+                        <label class="col-sm-2  control-label">报名班级</label>
+                        <div class="col-sm-10">
+                            {{ enrollment_obj.class_grade }}
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label class="col-sm-2  control-label">学费</label>
+                        <div class="col-sm-10">
+                            {{ enrollment_obj.class_grade.course.price }}
+                        </div>
+                    </div>
+                    <input type="checkbox" name="contract_agreed" > 我已认真阅读,无条件同意
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                        查看协议
+                    </button>
+                    <input type="submit" class="btn btn-success" value="提交">
+                </form>
+                <div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="border-radius: 4px">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">{{ enrollment_obj.class_grade.contract_template.name }}</h4>
+                                </div>
+                            <div class="modal-body">
+                                {{ enrollment_obj.class_grade.contract_template.content|safe }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p>已上传文件列表</p>
+                <ul id="uploaded_files">
+                    {% for file in uploaded_files %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+                <p style="font-size: 16px; margin-top: 15px">上传个人信息证件，可打水印</p>
+                <form action="{% url 'stu_enrollment_fileupload' enrollment_obj.id  %}" id="myAwesomeDropzone" class="dropzone">
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer"></div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'plugins/dropzone/dropzone.js' %}"></script>
+    <script>
+        Dropzone.options.myAwesomeDropzone = {
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 2, // MB
+            maxFiles:2,
+            parallelUploads:1,
+            accept: function(file, done) {
+            if (file.name == "justinbieber.jpg") {
+                done("Naha, you don't.");
+            }
+            else { done(); }
+            }
+        };
+        $(function() {
+            Dropzone.options.myAwesomeDropzone = false;
+                var myDropzone = new Dropzone("#myAwesomeDropzone");
+                myDropzone.on("success", function(file,response) {
+                console.log("completet", file, response);
+                var response = JSON.parse(response);
+                if (!response.status){
+                    alert(response.err_msg);
+                }else {
+                    $("#uploaded_files").append("<li>"+ file.name +"</li>");
+                }
+            });
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            bindFormSubmit()
+        });
+        function bindFormSubmit() {
+            $('#registration_data').submit(function () {
+                $(":disabled").removeAttr("disabled");
+                if (!$("input[name='contract_agreed']").prop("checked")){
+                    alert("请同意培训协议.");
+                    return false;
+                }
+            })
+        }
+    </script>
+{% endblock %}

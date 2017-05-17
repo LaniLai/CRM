@@ -1,0 +1,139 @@
+{% extends 'public/_public.html' %}
+{% block css %}
+    <style>
+        p{
+            font-size: 18px;
+        }
+        #enrollment-body ul li{
+            list-style: none;
+            border-bottom: solid 3px gainsboro;
+            text-align: center;
+        }
+        #enrollment-body ul li.active{
+            border-bottom: solid 3px #5FA2DE;
+        }
+        #enrollment-body ul li span.active{
+            display: inline-block;
+            background-color: red;
+            color: white;
+            width: 26px;
+            border-radius: 4px;
+        }
+        #enrollment-body input, #enrollment-body select{
+            border-radius: 4px;
+        }
+    </style>
+    {% block flow-css %}{% endblock %}
+{% endblock %}
+{% block page_content %}
+    <div class="panel panel-info" style="margin-top: 20px">
+        <div class="panel-heading">
+            <h3 class="panel-title">正在为 "{{ customer.name }}" 客户办理报名流程</h3>
+        </div>
+        <div class="panel-body" style="height: 430px;">
+            <div class="col-md-5 eq-box-md text-center box-vmiddle-wrap bg-primary" style="height: 380px">
+                <!-- Simple Promotion Widget -->
+                <!--===================================================-->
+                <div class="box-vmiddle pad-all">
+                    <h3 class="text-thin">学员报名</h3>
+                    <span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
+                        <i class="fa fa-gift fa-5x" aria-hidden="true"></i>
+                    </span>
+                    <p>2017六一儿童节前报名，享 <span class="text-lg text-bold">50%</span> 优惠，今天就开启技术牛人之路！</p>
+                    <a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">详细活动信息...</a>
+                    <p style="margin-top: 50px">
+                        <i class="fa fa-google-wallet fa-5x" aria-hidden="true"></i>
+                    </p>
+                </div>
+                <!--===================================================-->
+            </div>
+            <div id='enrollment-body' class="col-md-7 eq-box-md eq-no-panel" style="height: 380px">
+                <ul class="row wz-step wz-icon-bw wz-nav-off mar-top wz-steps">
+                    <li class="col-xs-3 active">
+                        <a data-toggle="tab" href="#demo-main-tab1" >
+                            <p class="text-thin">选择班级</p>
+                        </a>
+                    </li>
+                    <li class="col-xs-3" >
+                        <a data-toggle="tab" href="#demo-main-tab2" >
+                            <p class="text-thin">审核学员信息</p>
+                        </a>
+                    </li>
+                    <li class="col-xs-3">
+                        <a data-toggle="tab" href="#demo-main-tab3">
+                            <p class="text-thin">缴费</p>
+                        </a>
+                    </li>
+                    <li class="col-xs-3">
+                        <a data-toggle="tab" href="#demo-main-tab4">
+                            <p class="text-thin">报名成功</p>
+                        </a>
+                    </li>
+                </ul>
+                <!--<div style="height: 30px;transition: all 0.5s;"></div>-->
+                <div id="enrollment-content">
+                    {% block flow %}
+                    <form class="form-horizontal" method="post">
+                        <div style="height: 270px">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">客户</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="name" disabled class="form-control" value="{{ customer.name }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">选择班级</label>
+                                <div class="col-sm-10">
+                                    <select name="class_grade">
+                                        {% for cls in class_lists %}
+                                            <option value="{{ cls.id }}">{{ cls }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                点击下一步, 生成报名合同填写表链接, 发给客户填写
+                                <p style="height: 30px" id="enrollment_link"></p>
+                            </div>
+                        </div>
+                        <div class="pull-right pad-all submitbtn">
+                            <p id='get_btn' class="btn btn-success">下一步</p>
+                        </div>
+                    </form>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            bindGetLink();
+        });
+
+        function bindGetLink() {
+            $('#get_btn').click(function () {
+                data = {'class_grade_id': $('select[name="class_grade"]').val()};
+                $.ajax({
+                    url: '/crm/stu_enrollment-{{ customer.id }}/',
+                    type: 'patch',
+                    data: JSON.stringify(data),
+                    success: function (arg) {
+                        msg = JSON.parse(arg);
+                        if(msg.status){
+                            if(msg.code == '200'){
+                                $('#enrollment_link').text(msg.enrollment_link);
+                            }else if (msg.code == '201'){
+                                $('#enrollment_link').text(msg.enrollment_link);
+                                window.location.href =
+                                    'http://localhost:8000/crm/stu_enrollment/'+ msg.enrollment_id +'/contract_audit/'
+                            }
+                        }
+                    }
+                })
+            })
+        }
+
+    </script>
+{% endblock %}

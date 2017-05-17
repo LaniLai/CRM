@@ -1,0 +1,43 @@
+{% extends 'public/_public.html' %}
+{% load staticfiles %}
+{% block css %}
+    <style>
+        .table > thead > tr {
+            background-image: none;
+        }
+        table thead th:hover{
+            background-color: #EEEEEE;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+    <div class="panel panel-info" style="margin-top: 20px">
+        <div class="panel-heading">
+            <h3 class="panel-title">我的客户</h3>
+        </div>
+        <div class="panel-body">
+            <div class="btn-group" role="group" style="margin-bottom: 10px">
+                <button id="idCheckAll" type="button" class="btn btn-default">全选</button>
+                <button id="idReverseAll" type="button" class="btn btn-default">反选</button>
+                <button id="idCancelAll" type="button" class="btn btn-default">取消</button>
+                <button id="idEditMode" type="button" class="btn btn-default">进入编辑模式</button>
+                <button id="idSave" type="button" class="btn btn-default">保存</button>
+                <a id="idAdd" href="#" class="btn btn-default">添加</a>
+            </div>
+            <table class="table table-striped">
+                <thead id="table_th"></thead>
+                <tbody id="table_tb"></tbody>
+            </table>
+            <ul id="idPagination" class="pagination"></ul>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/js/nbList.js"></script>
+    <script>
+        $(function () {
+            $.NB("/crm/customers-json/");
+        });
+    </script>
+{% endblock %}

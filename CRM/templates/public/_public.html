@@ -1,0 +1,266 @@
+{% extends 'public/base.html' %}
+{% load staticfiles %}
+{% block body %}
+    <div class="navbar navbar-default" id="navbar">
+        <script type="text/javascript">
+            try {
+                ace.settings.check('navbar', 'fixed')
+            } catch (e) {
+            }
+        </script>
+        <div class="navbar-container" id="navbar-container">
+            <!-- #section:basics/sidebar.mobile.toggle -->
+            <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
+                <span class="sr-only">Toggle sidebar</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-header pull-left">
+                <a href="#" class="navbar-brand">
+                    <small>
+                        <i class="icon-leaf"></i>
+                        PerfectCRM
+                    </small>
+                </a><!-- /.brand -->
+            </div>
+            <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                <ul class="nav ace-nav">
+                    <li class="light-blue">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                            <img class="nav-user-photo" src="{% static 'imgs/girl.jpg' %}">
+                            <span class="user-info">
+                        <small>欢迎你，</small>
+                        {{ request.user }}
+                    </span>
+                            <i class="ace-icon fa fa-caret-down"></i>
+                        </a>
+                        <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                            <li>
+                                <a href="#">
+                                    <i class="ace-icon fa fa-cog"></i>
+                                    设置
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ace-icon fa fa-user"></i>
+                                    Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/bossadmin/logout/">
+                                    <i class="ace-icon fa fa-power-off"></i>
+                                    退出
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul><!-- /.ace-nav -->
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try {
+                ace.settings.check('main-container', 'fixed')
+            } catch (e) {
+            }
+        </script>
+        <div class="sidebar responsive" id="sidebar">
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'fixed')
+                } catch (e) {
+                }
+            </script>
+            <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                    <button class="btn btn-success">
+                        <i class="ace-icon fa fa-signal"></i>
+                    </button>
+                    <button class="btn btn-info">
+                        <i class="ace-icon fa fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-warning">
+                        <i class="ace-icon fa fa-users"></i>
+                    </button>
+                    <button class="btn btn-danger">
+                        <i class="ace-icon fa fa-cogs"></i>
+                    </button>
+                </div>
+            </div><!-- /.sidebar-shortcuts -->
+
+            <ul class="nav nav-list">
+                <li class="">
+                    <a href="/bossadmin/">
+                        <i class="menu-icon fa fa-tachometer"></i>
+                        <span class="menu-text"> 我的面板 </span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                {% for role in request.user.role.select_related %}
+                    {% for menu in role.menus.select_related %}
+                        <li class="">
+                            <a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name %}{% endif %}">
+                                <i class="menu-icon fa fa-users"></i>
+                                {{ menu.name }}
+                                <!--<b class="arrow fa fa-angle-down"></b>-->
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+            <!-- #section:basics/sidebar.layout.minimize -->
+            <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+                <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left"
+                   data-icon2="ace-icon fa fa-angle-double-right"></i>
+            </div>
+            <!-- /section:basics/sidebar.layout.minimize -->
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'collapsed')
+                } catch (e) {
+                }
+            </script>
+        </div>
+
+        <div class="main-content">
+            <!-- #section:basics/content.breadcrumbs -->
+            <div class="breadcrumbs" id="breadcrumbs">
+                <script type="text/javascript">
+                    try {
+                        ace.settings.check('breadcrumbs', 'fixed')
+                    } catch (e) {
+                    }
+                </script>
+
+                <ul class="breadcrumb">
+                    <li>
+                        <i class="ace-icon fa fa-home home-icon"></i>
+                        <a href="#">{% block path %}Home{% endblock %}</a>
+                    </li>
+
+                </ul><!-- /.breadcrumb -->
+
+                <!-- #section:basics/content.searchbox -->
+                <div class="nav-search" id="nav-search">
+                    <form class="form-search">
+                            <span class="input-icon">
+                                <input placeholder="Search ..." class="nav-search-input"
+                                       autocomplete="off" type="text">
+                                <i class="ace-icon fa fa-search nav-search-icon"></i>
+                            </span>
+                    </form>
+                </div><!-- /.nav-search -->
+
+                <!-- /section:basics/content.searchbox -->
+            </div>
+            <!-- /section:basics/content.breadcrumbs -->
+            <div class="page-content">
+                <!-- #section:settings.box -->
+                <div class="ace-settings-container" id="ace-settings-container">
+                    <div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
+                        <i class="ace-icon fa fa-cog bigger-150"></i>
+                    </div>
+
+                    <div class="ace-settings-box clearfix" id="ace-settings-box">
+                        <div class="pull-left width-50">
+                            <!-- #section:settings.skins -->
+                            <div class="ace-settings-item">
+                                <div class="pull-left">
+                                    <select id="skin-colorpicker" class="hide">
+                                        <option data-skin="no-skin" value="#438EB9" selected>#438EB9</option>
+                                        <option data-skin="skin-1" value="#222A2D">#222A2D</option>
+                                        <option data-skin="skin-2" value="#C6487E">#C6487E</option>
+                                        <option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+                                    </select>
+                                </div>
+                                <span>&nbsp; 选择皮肤</span>
+                            </div>
+
+                            <!-- /section:settings.skins -->
+
+                            <!-- #section:settings.navbar -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-navbar" type="checkbox">
+                                <label class="lbl" for="ace-settings-navbar"> 固定导航条</label>
+                            </div>
+
+                            <!-- /section:settings.navbar -->
+
+                            <!-- #section:settings.sidebar -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-sidebar" type="checkbox">
+                                <label class="lbl" for="ace-settings-sidebar"> 固定滚动条</label>
+                            </div>
+
+                            <!-- /section:settings.sidebar -->
+
+                            <!-- #section:settings.breadcrumbs -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-breadcrumbs" type="checkbox">
+                                <label class="lbl" for="ace-settings-breadcrumbs"> 固定面包屑</label>
+                            </div>
+
+                            <!-- /section:settings.breadcrumbs -->
+
+                            <!-- #section:settings.rtl -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-rtl" type="checkbox">
+                                <label class="lbl" for="ace-settings-rtl"> 切换到左边</label>
+                            </div>
+
+                            <!-- /section:settings.rtl -->
+
+                            <!-- #section:settings.container -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-add-container" type="checkbox">
+                                <label class="lbl" for="ace-settings-add-container">
+                                    切换窄屏
+                                    <!-- <b>.container</b> -->
+                                </label>
+                            </div>
+
+                            <!-- /section:settings.container -->
+                        </div><!-- /.pull-left -->
+
+                        <div class="pull-left width-50">
+                            <!-- #section:basics/sidebar.options -->
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-hover" type="checkbox">
+                                <label class="lbl" for="ace-settings-hover"> Submenu on Hover</label>
+                            </div>
+
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-compact" type="checkbox">
+                                <label class="lbl" for="ace-settings-compact"> Compact Sidebar</label>
+                            </div>
+
+                            <div class="ace-settings-item">
+                                <input class="ace ace-checkbox-2" id="ace-settings-highlight" type="checkbox">
+                                <label class="lbl" for="ace-settings-highlight"> Alt. Active Item</label>
+                            </div>
+
+                            <!-- /section:basics/sidebar.options -->
+                        </div><!-- /.pull-left -->
+                    </div><!-- /.ace-settings-box -->
+                </div><!-- /.ace-settings-container -->
+                <!-- /section:settings.box -->
+                <div class="page-content-area">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            {% block page_content %}{% endblock %}
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content-area -->
+            </div><!-- /.page-content -->
+
+        </div><!-- /.main-content -->
+    </div>
+
+{% endblock %}
+

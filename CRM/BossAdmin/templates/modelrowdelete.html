@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% load mytags %}
+{% block path %}{{ request.path|get_path }}{% endblock %}
+{% block page_content %}
+    <div style="border-radius: 4px" class="alert alert-danger" role="alert">
+        注意："{{ delete_obj }}"  相关的数据可能会相应删除！！！
+    </div>
+    {{ delete_obj|get_relevant_data|safe }}
+    <form method="post">{% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="确认删除">
+        <a href="{% url 'action' app_name model_name nid 'change/' %}" class="btn btn-info">返回</a>
+    </form>
+{% endblock %}

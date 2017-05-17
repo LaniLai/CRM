@@ -1,0 +1,45 @@
+{% extends 'crm/stu_enrollment.html' %}
+{% block flow-css %}
+    <style>
+        .form-inline .form-group{
+            width: 48%;
+            margin-top: 7px;
+        }
+        .form-inline .form-control {
+            display: inline-block;
+            vertical-align: middle;
+            width: 289px;
+        }
+    </style>
+{% endblock %}
+{% block flow %}
+    <form class="form-inline" method="post">
+        {% for field in customer_form %}
+        <div class="form-group">
+            <label for="exampleInputName2">{{ field.label }}</label>
+            {{ field }}<span style="color: red;">{{ field.errors.0 }}</span>
+        </div>
+        {% endfor %}
+        {% for field in enrollment_form %}
+        <div class="form-group">
+            <label for="exampleInputName2">{{ field.label }}</label>
+            {{ field }}<span style="color: red;">{{ field.errors.0 }}</span>
+        </div>
+        {% endfor %}
+        <div class="pull-right pad-all submitbtn">
+            <input type="submit" class="btn btn-success" value="下一步" />
+        </div>
+    </form>
+{% endblock %}
+{% block js %}
+    <script>
+        $('a[href="#demo-main-tab2"]').parent().addClass('active').siblings().removeClass('active');
+        $('input[type="submit"]').click(function () {
+            if(!$('#id_contract_approved').prop('checked')){
+                alert('审核通过打对勾');
+                return false
+            }
+            $(":disabled").removeAttr("disabled");
+        })
+    </script>
+{% endblock %}

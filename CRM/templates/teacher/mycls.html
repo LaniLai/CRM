@@ -1,0 +1,36 @@
+{% extends 'public/_public.html' %}
+{% block page_content %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">我的班级</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>班级</th>
+                        <th>类型</th>
+                        <th>开班日期</th>
+                        <th>已上节次</th>
+                        <th>班内总人数(可查看)</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cls in my_class %}
+                    <tr>
+                        <td><a href="/teacher/mycls-{{ cls.id }}/">{{ cls.course.name }}({{ cls.semester }})</a></td>
+                        <td>{{ cls.get_class_type_display }}</td>
+                        <td>{{ cls.start_date | date:"Y-m-d" }}</td>
+                        <td>{{ cls.courserecord_set.all.count }}</td>
+                        <td>
+                            <a href="/teacher/mycls/{{ cls.id }}/stu_list/">{{ cls.student_set.all.count }}</a>
+                        </td>
+                        <td><a href="/teacher/mycls/add-{{ cls.id }}-course-record/">添加上课记录</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
